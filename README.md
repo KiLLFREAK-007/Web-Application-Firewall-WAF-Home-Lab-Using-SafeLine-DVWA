@@ -1,45 +1,32 @@
-# Web-Application-Firewall-WAF-Home-Lab-Using-SafeLine-DVWA
+# Web Application Firewall (WAF) Home Lab Using SafeLine & DVWA
 
-🛡️ Web Application Firewall (WAF) Home Lab Using SafeLine & DVWA
+🛡️ **Web Application Firewall (WAF) Home Lab Using SafeLine & DVWA**
 
-A Practical Cybersecurity Project for Learning Web App Defense & Attack Simulation
+A practical cybersecurity project for learning web application defense and attack simulation.
 
-<img width="1857" height="892" alt="Screenshot 2025-11-29 184327" src="https://github.com/user-attachments/assets/5ca80849-7296-4d1d-af51-5f712530c359" />
+<img width="1857" height="892" alt="Screenshot 2025-11-29 184327" src="https://github.com/user-attachments/assets/0e9a6ccc-ad5e-45ca-84d0-7d4668986d14" />
 
 
-📌 Overview
+---
 
-This project demonstrates how to build a complete cybersecurity home lab focused on web application security, attack simulation, and defensive architecture using:
+## 📌 Overview
+This project builds a complete security lab using:
 
--SafeLine WAF
+- SafeLine WAF  
+- DVWA  
+- Kali Linux  
+- Ubuntu Server  
+- VirtualBox  
 
--DVWA (Damn Vulnerable Web App)
+The lab demonstrates both attack & defense — performing web attacks and observing WAF protection.
 
--Kali Linux (attack machine)
+---
 
--Ubuntu Server (web server)
+## 🏗️ Lab Architecture
 
--VirtualBox for virtualization
-
-The lab covers both offensive and defensive security — performing web attacks and observing how the WAF mitigates them.
-
-🎯 Key Objectives
-
--Deploy DVWA on a LAMP environment
-
--Simulate real-world attacks (SQL Injection)
-
--Configure SafeLine WAF for web protection
-
--Set up VirtualBox networking + DNS
-
--Apply WAF rules such as IP blocking, rate limiting, and authentication
-
--Perform log analysis and verify WAF response
-
-🏗️ Lab Architecture
+```
                ┌──────────────────────┐
-               │     Legit Users       │
+               │     Legit Users      │
                └──────────┬───────────┘
                           │ Requests
                           ▼
@@ -47,85 +34,76 @@ The lab covers both offensive and defensive security — performing web attacks 
                 │    SafeLine WAF     │
                 │  (Reverse Proxy)    │
                 └──────────┬──────────┘
-                          ▼
+                           ▼
                 ┌─────────────────────┐
                 │   DVWA on Ubuntu    │
                 │  Apache + MySQL     │
                 └─────────────────────┘
 
 Attack Traffic from Kali Linux  ─────────►  SafeLine WAF  ─────────►  DVWA
+```
 
-🚀 Features Implemented
-✔️ Virtualized Security Environment
+---
 
-VirtualBox VMs
+## 🚀 Features Implemented
 
-Kali Linux (attacker)
+### ✔️ Virtualized Security Environment
+- VirtualBox VMs  
+- Kali Linux (attacker)  
+- Ubuntu Server (victim)  
+- Bridged networking  
 
-Ubuntu Server (victim)
+### ✔️ DVWA Deployment
+- LAMP installation  
+- MySQL database  
+- Apache port change to 8080  
+- DVWA configuration  
 
-Bridged networking for realistic scenarios
+### ✔️ SafeLine WAF Setup
+- Automatic installation  
+- Reverse proxy setup  
+- Domain mapping via `/etc/hosts`  
+- No SSL (HTTP only)  
 
-✔️ DVWA Deployment
+### ✔️ Security Testing
+- SQL Injection  
+- Event logs  
+- Custom deny rules  
+- Rate limiting  
+- Authentication  
 
-LAMP stack installation
+---
 
-MySQL database + DVWA configuration
+## 📥 Installation & Setup Guide
 
-Custom Apache port (8080)
-
-Custom database entries for exploitation
-
-✔️ SafeLine WAF Setup
-
-Automatic installation script
-
-Reverse proxy configuration for DVWA
-
-Domain mapping with /etc/hosts
-
-No SSL involved (HTTP routing only)
-
-✔️ Security Testing
-
-SQL Injection exploitation
-
-WAF event logs & blocked requests
-
-Custom deny rules
-
-Rate-limiting and HTTP flood defense
-
-Authentication gateway (optional)
-
-✔️ DNS Resolution
-
-/etc/hosts domain mapping
-
-Optional BIND DNS if needed
-
-📥 Installation & Setup Guide
-1. Install DVWA
+### **1. Install DVWA**
+```bash
 cd /var/www/html
 sudo git clone https://github.com/digininja/DVWA.git
+```
 
-2. Install LAMP Stack
+### **2. Install LAMP Stack**
+```bash
 sudo apt install apache2 php php-mysql mysql-server -y
+```
 
-3. Configure MySQL
+### **3. Configure MySQL**
+```sql
 CREATE DATABASE dvwa;
 CREATE USER 'dvwa_user'@'localhost' IDENTIFIED BY 'p@ssw0rd';
 GRANT ALL ON dvwa.* TO 'dvwa_user'@'localhost';
 FLUSH PRIVILEGES;
+```
 
-4. Run DVWA on Port 8080
+### **4. Run DVWA on Port 8080**
+```bash
 sudo nano /etc/apache2/ports.conf
-Change: Listen 80 → Listen 8080
+# Change:
+# Listen 80 → Listen 8080
+```
 
-5. Connect DVWA to Port 8080, domainname
-Go to /etc/apache2/sites-available
-Create dvwa.conf
-Paste the code below:
+### **5. Create dvwa.conf - /etc/apache2/sites-available/**
+```apache
 <VirtualHost *:8080>
     ServerAdmin admin@mylocal.dvwa
     DocumentRoot /var/www/html/DVWA
@@ -139,61 +117,69 @@ Paste the code below:
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
+```
 
->>>Run sudo systemctl a2ensite dvwa.conf
+Enable site:
+```bash
+sudo systemctl a2ensite dvwa.conf
+```
 
-6. Change /etc/hosts file
-sudo nano /etc/hosts
-Add : <UbuntuIP> mylocal.dvwa
-Do same to Attack Machine(Kali)
+### **6. Edit /etc/hosts**
+```
+<UbuntuIP> mylocal.dvwa
+```
 
-7. Install SafeLine WAF
+Do the same on Kali.
+
+### **7. Install SafeLine WAF**
+```bash
 bash -c "$(curl -fsSLk https://waf.chaitin.com/release/latest/manager.sh)" -- --en
+```
 
-8. Onboard DVWA into SafeLine
+### **8. Onboard DVWA in SafeLine**
+- Backend: `http://<UbuntuIP>:8080`  
+- Domain: `mylocal.dvwa`  
+- Port: `4444`  
 
-Add backend: http://<UbuntuIP>:8080
-Add domain: mylocal.dvwa
-Add port: 4444
+---
 
+## 🔥 Attack Demonstration (Kali Linux)
 
-🔥 Attack Demonstration (Kali Linux)
-
-Go to:
+Visit:  
+```
 http://mylocal.dvwa:4444
+```
 
 Login:
--admin / password
+```
+admin / password
+```
 
--Set DVWA security to Low
+Set DVWA security to **Low**
 
-Try SQL Injection payloads:
+Try SQL injection:
+```
+admin' OR '1'='1
+```
 
--admin' OR '1'='1
+Check SafeLine WAF logs.
 
--View SafeLine WAF logs for blocked events
+---
 
--Log analysis & threat detection
+<img width="1855" height="890" alt="Screenshot 2025-11-29 184240" src="https://github.com/user-attachments/assets/f78620e5-5b70-47c7-876c-376f294ae97e" />
 
-
-<img width="1855" height="890" alt="Screenshot 2025-11-29 184240" src="https://github.com/user-attachments/assets/1c6bfaf4-223d-4585-8d1c-802142c8e6f9" />
-
-
-<img width="1918" height="882" alt="Screenshot 2025-11-29 184434" src="https://github.com/user-attachments/assets/ff24bc1a-16bc-492d-bc90-469e7674fe13" />
+<img width="1918" height="882" alt="Screenshot 2025-11-29 184434" src="https://github.com/user-attachments/assets/a955c812-6395-49fb-9717-b6763fa6b163" />
 
 
-🧠 Skills Gained
+## 🧠 Skills Gained
 
-Cybersecurity fundamentals
+- Cybersecurity fundamentals  
+- Web app security  
+- WAF configuration  
+- Linux administration  
+- MySQL & Apache  
+- Attack simulation  
+- DNS & networking  
 
-Web application security
+---
 
-WAF configuration
-
-Linux administration
-
-MySQL & Apache setup
-
-Attack simulation & defense
-
-DNS & networking
