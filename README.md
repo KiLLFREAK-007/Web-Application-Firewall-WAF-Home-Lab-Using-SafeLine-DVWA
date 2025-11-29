@@ -120,12 +120,12 @@ FLUSH PRIVILEGES;
 
 4. Run DVWA on Port 8080
 sudo nano /etc/apache2/ports.conf
-# Change: Listen 80 → Listen 8080
+Change: Listen 80 → Listen 8080
 
 5. Connect DVWA to Port 8080, domainname
-# Go to /etc/apache2/sites-available
-# Create dvwa.conf
-# Paste the code below
+Go to /etc/apache2/sites-available
+Create dvwa.conf
+Paste the code below:
 <VirtualHost *:8080>
     ServerAdmin admin@mylocal.dvwa
     DocumentRoot /var/www/html/DVWA
@@ -140,12 +140,12 @@ sudo nano /etc/apache2/ports.conf
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 
-# Run sudo systemctl a2ensite dvwa.conf
+>>>Run sudo systemctl a2ensite dvwa.conf
 
 6. Change /etc/hosts file
 sudo nano /etc/hosts
-# Add : <UbuntuIP> mylocal.dvwa
-# Do same to Attack Machine(Kali)
+Add : <UbuntuIP> mylocal.dvwa
+Do same to Attack Machine(Kali)
 
 7. Install SafeLine WAF
 bash -c "$(curl -fsSLk https://waf.chaitin.com/release/latest/manager.sh)" -- --en
